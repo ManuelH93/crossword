@@ -100,8 +100,8 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
-        domain_copy = copy.deepcopy(self.domains)
-        for variable, domain in domain_copy.items():
+        domains = copy.deepcopy(self.domains)
+        for variable, domain in domains.items():
             for word in domain:
                 if len(word) != variable.length:
                     self.domains[variable].remove(word)
