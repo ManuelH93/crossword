@@ -1,5 +1,6 @@
 import sys
 import copy
+import itertools
 
 from crossword import *
 
@@ -144,7 +145,18 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
-        raise NotImplementedError
+        if arcs == None:
+            queue = list(itertools.permutations(self.crossword.variables, 2))
+        else:
+            queue = arcs
+        while len(queue) != 0:
+            (x,y) = queue.pop()
+            if self.revise(x, y):
+                if len(self.domains[x]) == 0:
+                    return False
+                for neighbor in self.crossword.neighbors(x) - {y}:
+                    queue.append((neighbor, x))
+        return True
 
     def assignment_complete(self, assignment):
         """
