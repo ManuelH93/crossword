@@ -1,6 +1,7 @@
 import sys
 import copy
 import itertools
+import pandas as pd
 
 from crossword import *
 
@@ -235,7 +236,36 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        raise NotImplementedError
+        # Determine unassigned variables
+        unassigned = copy.deepcopy(self.crossword.variables)
+        for variable in self.crossword.variables:
+            if variable in assignment.keys():
+                unassigned.remove(variable)
+        # Create lists of criteria by which we want to sort variables
+        variable = []
+        values = []
+        n_neighbors = []
+        for v in unassigned:
+            variable.append(v)
+            values.append(len(self.domains[v]))
+            neighbors = copy.deepcopy(self.crossword.neighbors(v))
+            # Note: we want to return variable, that will impose
+            # highest number of restrictions on other variables (i.e: neighbors).
+            # If a neighbor is already asssigned, no additional restriction will
+            # be imposed on that neighbor. For the degree heuristic, we therefore
+            # only count neighbors that have not been assigned yet.
+            for v in self.crossword.neighbors(v):
+                if v in assignment.keys():
+                    neighbors.remove(v)
+            n_neighbors.append(len(neighbors))
+        # Sort variables
+        listofkeys = ('variable', 'values', 'n_neighbors')
+        listofvalues = (variable, values, n_neighbors)
+        dictionary=dict(zip(listofkeys,listofvalues))
+        df = pd.DataFrame(dictionary)
+        df = df.sort_values(["values", "n_neighbors"], ascending = (True, False))
+        df.reset_index(drop = True, inplace = True)
+        return df.loc[0, 'variable']
 
     def backtrack(self, assignment):
         """
