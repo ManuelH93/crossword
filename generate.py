@@ -209,12 +209,10 @@ class CrosswordCreator():
         that rules out the fewest values among the neighbors of `var`.
         """
         # Determine all neighbors that have not been assigned yet
-        neighbors_all = self.crossword.neighbors(var)
-        neighbors_unassigned = copy.deepcopy(neighbors_all)
-        for v1 in neighbors_all:
-            for v2 in assignment.keys():
-                if v1 == v2:
-                    neighbors_unassigned.remove(v1)
+        neighbors_unassigned = copy.deepcopy(self.crossword.neighbors(var))
+        for v1 in self.crossword.neighbors(var):
+            if v1 in assignment.keys():
+                neighbors_unassigned.remove(v1)
         # Determine number of eliminated words for each possible value
         choices = list(self.domains[var])
         tracker = {}
