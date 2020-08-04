@@ -122,13 +122,17 @@ class CrosswordCreator():
         if overlap == None:
             return revised
         else:
-            position_x = overlap[0]
+            # For each possible word for variable y,
+            # collect character that overlaps with x.
             position_y = overlap[1]
             set_y = set()
             for word in self.domains[y]:
                 set_y.add(word[position_y])
-
+            # Remove all words from domain of x, that
+            # do not have a possible value for y that
+            # satisfies constraint from overlap.
             domain_x = copy.deepcopy(self.domains[x])
+            position_x = overlap[0]
             for word in domain_x:
                 if word[position_x] in set_y:
                     continue
@@ -264,7 +268,6 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        self.print(assignment)
         if self.assignment_complete(assignment):
             return assignment
         var = self.select_unassigned_variable(assignment)
