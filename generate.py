@@ -274,12 +274,12 @@ class CrosswordCreator():
         for value in self.order_domain_values(var, assignment):
             assignment.update({var : value})
             neighbors = self.crossword.neighbors(var)
-            test = []
+            arcs = []
             for neighbor in neighbors:
-                test.append((neighbor, var))
+                arcs.append((neighbor, var))
             domains_copy = copy.deepcopy(self.domains)
             self.domains[var] = {value}
-            if self.ac3(arcs = test):
+            if self.ac3(arcs):
                 if self.consistent(assignment):
                     result = self.backtrack(assignment)
                     if result != None:
