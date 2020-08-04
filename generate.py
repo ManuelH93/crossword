@@ -178,15 +178,14 @@ class CrosswordCreator():
         # Check if each value is distinct:
         vals = {}
         for i in assignment.values():
-            l = list(i)
-            vals.setdefault(l[0],0)
-            vals[l[0]] += 1
+            vals.setdefault(i,0)
+            vals[i] += 1
         for v in vals.values():
             if v != 1:
                 consistent = False
         # Check if each value is of correct length:
         for k,v in assignment.items():
-            if k.length != len(list(v)[0]):
+            if k.length != len((v)):
                 consistent = False
         # Check that there are no conflicts between neigbhors:
         for v1,w1 in assignment.items():
@@ -196,9 +195,7 @@ class CrosswordCreator():
                 if self.crossword.overlaps[v1, v2] == None:
                     continue
                 w1_index, w2_index = self.crossword.overlaps[v1, v2]
-                word1 = list(w1)[0]
-                word2 = list(w2)[0]
-                if word1[w1_index] != word2[w2_index]:
+                if w1[w1_index] != w2[w2_index]:
                     consistent = False
         return consistent
 
@@ -248,16 +245,7 @@ class CrosswordCreator():
         for v in unassigned:
             variable.append(v)
             values.append(len(self.domains[v]))
-            neighbors = copy.deepcopy(self.crossword.neighbors(v))
-            # Note: we want to return variable, that will impose
-            # highest number of restrictions on other variables (i.e: neighbors).
-            # If a neighbor is already asssigned, no additional restriction will
-            # be imposed on that neighbor. For the degree heuristic, we therefore
-            # only count neighbors that have not been assigned yet.
-            for v in self.crossword.neighbors(v):
-                if v in assignment.keys():
-                    neighbors.remove(v)
-            n_neighbors.append(len(neighbors))
+            n_neighbors.append(len(self.crossword.neighbors(v)))
         # Sort variables
         listofkeys = ('variable', 'values', 'n_neighbors')
         listofvalues = (variable, values, n_neighbors)
