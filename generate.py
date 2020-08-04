@@ -273,18 +273,17 @@ class CrosswordCreator():
         var = self.select_unassigned_variable(assignment)
         for value in self.order_domain_values(var, assignment):
             assignment.update({var : value})
-            # Heuristics
             neighbors = self.crossword.neighbors(var)
             test = []
             for neighbor in neighbors:
                 test.append((neighbor, var))
             domains_copy = copy.deepcopy(self.domains)
             self.domains[var] = {value}
-            self.ac3(arcs = test)
-            if self.consistent(assignment):           
-                result = self.backtrack(assignment)
-                if result != None:
-                    return result
+            if self.ac3(arcs = test):
+                if self.consistent(assignment):
+                    result = self.backtrack(assignment)
+                    if result != None:
+                        return result
             assignment.pop(var)
             self.domains = domains_copy
         return None
